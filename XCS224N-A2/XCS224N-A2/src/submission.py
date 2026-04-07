@@ -26,9 +26,7 @@ def sigmoid(x):
   s -- sigmoid(x)
   """
 
-  ### START CODE HERE
   s = 1 / (1 + np.exp(-x))
-  ### END CODE HERE
 
   return s
 
@@ -66,14 +64,12 @@ def naive_softmax_loss_and_gradient(center_word_vec,outside_word_idx,outside_vec
   ### This numerically stable implementation helps you avoid issues pertaining
   ### to integer overflow.
   
-  ### START CODE HERE
   y_hat = softmax(center_word_vec @ outside_vectors.T)
   y = np.zeros_like(y_hat)
   y[outside_word_idx] = 1
   loss = -np.log(y_hat[outside_word_idx])
   grad_center_vec = (y_hat - y) @ outside_vectors
   grad_outside_vecs = np.outer(y_hat - y, center_word_vec)
-  ### END CODE HERE
 
   return loss, grad_center_vec, grad_outside_vecs
 
@@ -149,7 +145,6 @@ def skipgram(current_center_word, outside_words, word2ind, center_word_vectors, 
   grad_center_vecs = np.zeros(center_word_vectors.shape)
   grad_outside_vectors = np.zeros(outside_vectors.shape)
 
-  ### START CODE HERE
   # Get index and vector of center word
   center_word_idx = word2ind[current_center_word]
   center_word_vec = center_word_vectors[center_word_idx]
@@ -161,7 +156,6 @@ def skipgram(current_center_word, outside_words, word2ind, center_word_vectors, 
     loss += loss_i
     grad_center_vecs[center_word_idx] += grad_center_i
     grad_outside_vectors += grad_outside_i
-  ### END CODE HERE
 
   return loss, grad_center_vecs, grad_outside_vectors
 
@@ -260,10 +254,8 @@ def sgd(f, x0, step, iterations, postprocessing=None, use_saved=False,PRINT_EVER
     # You might want to print the progress every few iterations.
 
     loss = None
-    ### START CODE HERE
     loss, grad = f(x)
     x = x - step * grad
-    ### END CODE HERE
 
     x = postprocessing(x)
     if iter % PRINT_EVERY == 0:

@@ -58,11 +58,9 @@ class ParserModel(nn.Module):
         ### Please see the following docs for support:
         ###     Linear Layer: https://pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear
         ###     Dropout: https://pytorch.org/docs/stable/generated/torch.nn.Dropout.html#torch.nn.Dropout
-        ### START CODE HERE (~3 Lines)
         self.embed_to_hidden = nn.Linear(self.n_features * self.embed_size, self.hidden_size)
         self.dropout = nn.Dropout(self.dropout_prob)
         self.hidden_to_logits = nn.Linear(self.hidden_size, self.n_classes)
-        ### END CODE HERE
 
         self.reset_parameters()
 
@@ -89,10 +87,8 @@ class ParserModel(nn.Module):
         ###     Xavier Init: https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.xavier_uniform_
 
         pass
-        ### START CODE HERE (~2 Lines)
         nn.init.xavier_uniform_(self.embed_to_hidden.weight)
         nn.init.xavier_uniform_(self.hidden_to_logits.weight)
-        ### END CODE HERE
 
     def embedding_lookup(self, t):
         """ Utilize `self.pretrained_embeddings` to map input `t` from input tokens (integers)
@@ -112,7 +108,7 @@ class ParserModel(nn.Module):
         """
 
         x = None
-        
+
         ### TODO:
         ###     1) Use `self.pretrained_embeddings` to lookup the embeddings for the input tokens in `t`.
         ###     2) After you apply the embedding lookup, you will have a tensor shape (batch_size, n_features, embedding_size).
@@ -122,12 +118,10 @@ class ParserModel(nn.Module):
         ###         https://pytorch.org/docs/stable/tensors.html#torch.Tensor.size
         ###
         ###  Please see the following docs for support:
-        ###     Embedding Layer: https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html 
+        ###     Embedding Layer: https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html
         ###     View: https://pytorch.org/docs/stable/tensor_view.html
-        ### START CODE HERE (~1-3 Lines)
         x = self.pretrained_embeddings(t)
         x = x.view(t.size(0), -1)
-        ### END CODE HERE
         return x
 
     def forward(self, t):
@@ -160,11 +154,9 @@ class ParserModel(nn.Module):
         ### the loss function (torch.nn.CrossEntropyLoss) applies it more efficiently.
         ###
         ### Please see the following docs for support:
-        ###     ReLU: https://pytorch.org/docs/stable/generated/torch.nn.functional.relu.html#torch.nn.functional.relu 
-        ###  START CODE HERE (~3-5 lines)
+        ###     ReLU: https://pytorch.org/docs/stable/generated/torch.nn.functional.relu.html#torch.nn.functional.relu
         x = self.embedding_lookup(t)
         h = F.relu(self.embed_to_hidden(x))
         h = self.dropout(h)
         logits = self.hidden_to_logits(h)
-        ### END CODE HERE
         return logits
