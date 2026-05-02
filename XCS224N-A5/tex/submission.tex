@@ -1,0 +1,308 @@
+% This contents of this file will be inserted into the _Solutions version of the
+% output tex document.  Here's an example:
+
+% If assignment with subquestion (1.a) requires a written response, you will
+% find the following flag within this document: <SCPD_SUBMISSION_TAG>_1a
+% In this example, you would insert the LaTeX for your solution to (1.a) between
+% the <SCPD_SUBMISSION_TAG>_1a flags.  If you also constrain your answer between the
+% START_CODE_HERE and END_CODE_HERE flags, your LaTeX will be styled as a
+% solution within the final document.
+
+% Please do not use the '<SCPD_SUBMISSION_TAG>' character anywhere within your code.  As expected,
+% that will confuse the regular expressions we use to identify your solution.
+
+\def\assignmentnum{5 }
+\def\assignmentname{Self-Attention, Transformers, and Pretraining}
+\def\assignmenttitle{XCS224N Problem Set \assignmentnum \assignmentname}
+
+\input{macros}
+
+\begin{document}
+\pagestyle{myheadings} \markboth{}{\assignmenttitle}
+
+% <SCPD_SUBMISSION_TAG>_entire_submission
+
+This handout includes space for every question that requires a written response.
+Please feel free to use it to handwrite your solutions (legibly, please).  If
+you choose to typeset your solutions, the |README.md| for this assignment includes
+instructions to regenerate this handout with your typeset \LaTeX{} solutions.
+
+\ruleskip
+
+\LARGE
+1.g.i
+\normalsize
+
+% <SCPD_SUBMISSION_TAG>_1gi
+
+\begin{answer}
+    % ### START CODE HERE ###
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_1gi
+
+\clearpage
+
+\LARGE
+1.g.ii
+\normalsize
+
+% <SCPD_SUBMISSION_TAG>_1gii
+
+\begin{answer}
+    % ### START CODE HERE ###
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_1gii
+
+\clearpage
+
+\LARGE
+3.a.i
+\normalsize
+
+\textit{The distribution $\alpha$ is typically relatively ``diffuse''; the probability mass is spread out between many different $\alpha_i$. However, this is not always the case. Describe (in one sentence) under what conditions the categorical distribution $\alpha$ puts almost all of its weight on some $\alpha_j$, where $j \in \{1, \ldots, n\}$ (i.e., $\alpha_j \gg \sum_{i \neq j} \alpha_i$). What must be true about the query $q$ and/or the keys $\{k_1, \ldots, k_n\}$?}
+
+\bigskip
+
+% <SCPD_SUBMISSION_TAG>_3ai
+
+\begin{answer}
+    % ### START CODE HERE ###
+    $\alpha$ puts almost all its weight on $\alpha_j$ when $q$ is much more
+    closely aligned with $k_j$ than with any other key, or when $q$ has a
+    large enough magnitude to amplify a small directional advantage between
+    $k_j$ and the rest.
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_3ai
+
+\clearpage
+
+\LARGE
+3.a.ii
+\normalsize
+
+\textit{Under the conditions you gave in (i), describe the output $c$.}
+
+\bigskip
+
+% <SCPD_SUBMISSION_TAG>_3aiix	
+
+\begin{answer}
+    % ### START CODE HERE ###
+    Under the conditions described in 3(a)(i), $c \approx v_j$, i.e.\ attention
+    effectively ``copies'' $v_j$ to the output.
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_3aii
+
+\clearpage
+
+\LARGE
+3.b
+\normalsize
+
+\textit{Instead of focusing on just one vector $v_j$, a Transformer model might want to incorporate information from multiple source vectors. Consider the case where we instead want to incorporate information from two vectors $v_a$ and $v_b$, with corresponding key vectors $k_a$ and $k_b$. Assume that (1) all key vectors are orthogonal, so $k_i^\top k_j = 0$ for all $i \neq j$, and (2) all key vectors have norm $1$. Find an expression for a query vector $q$ such that $c \approx \frac{1}{2}(v_a + v_b)$, and justify your answer.}
+
+\bigskip
+
+% <SCPD_SUBMISSION_TAG>_3b
+
+\begin{answer}
+    % ### START CODE HERE ###
+    A query $q$ such that $c \approx \frac{1}{2}(v_a + v_b)$ requires attention weights that look like $\alpha_a \approx \frac{1}{2}$, $\alpha_b \approx \frac{1}{2}$, and $\alpha_i \approx 0$ for all other $i$, i.e.\ two equal peaks instead of one tall peak. This involves conditioning on dot products such that:
+    \begin{itemize}
+        \item $k_a^\top q = k_b^\top q$: equal scores at positions $a$ and $b$.
+        \item $k_i^\top q \ll k_a^\top q$ for every other $i$, so the softmax function pushes all other $\alpha_i$ to ${\sim}0$.
+    \end{itemize}
+    That $q$ can be expressed as $\beta(k_a + k_b)$ for some positive scalar $\beta$. To make sure that this behaves as desired, compute the three dot products:
+    \begin{itemize}
+        \item $k_a^\top q = \beta \cdot (k_a^\top k_a + k_a^\top k_b) = \beta \cdot (1 + 0) = \beta$
+        \item $k_b^\top q = \beta \cdot (k_b^\top k_a + k_b^\top k_b) = \beta \cdot (0 + 1) = \beta$
+        \item For any other $k_i$: $k_i^\top q = \beta \cdot (k_i^\top k_a + k_i^\top k_b) = \beta \cdot (0 + 0) = 0$
+    \end{itemize}
+    Scores for $a$ and $b$ are both $\beta$ and zero elsewhere.
+    \[ \alpha_a = \alpha_b = \frac{e^\beta}{2 e^\beta + (n-2)} \]
+    \[ \alpha_i = \frac{1}{2 e^\beta + (n-2)} \quad \text{for } i \notin \{a, b\} \]
+    When $\beta$ is small, the $(n-2)$ background terms dilute the two peaks and $\alpha_a$ falls below $\frac{1}{2}$. As $\beta \to \infty$, the $2 e^\beta$ swamps the $(n-2)$, and we get $\alpha_a \to \frac{1}{2}$, $\alpha_b \to \frac{1}{2}$, and every other $\alpha_i \to 0$.
+
+    Plugging these weights into equation (3), $c = \sum_i v_i \alpha_i \approx \frac{1}{2} v_a + \frac{1}{2} v_b + 0 = \frac{1}{2}(v_a + v_b)$, as required.
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_3b
+
+\clearpage
+
+\LARGE
+3.c.i
+\normalsize
+
+\textit{Assume that the covariance matrices are $\Sigma_i = \alpha I$, $\forall i \in \{1, 2, \ldots, n\}$, for vanishingly small $\alpha$. Design a query $q$ in terms of the $\mu_i$ such that as before, $c \approx \frac{1}{2}(v_a + v_b)$, and provide a brief argument as to why it works.}
+
+\bigskip
+
+% <SCPD_SUBMISSION_TAG>_3ci
+
+\begin{answer}
+    % ### START CODE HERE ###
+    Let $q = \beta(\mu_a + \mu_b)$ for some large positive scalar $\beta$. Because the covariances are vanishingly small, each $k_i$ is essentially equal to its mean $\mu_i$, so the construction from part (b) carries over with $\mu$s in place of $k$s, i.e.\ $k_a^\top q \approx k_b^\top q \approx \beta$ and $k_i^\top q \approx 0$ for $i \notin \{a, b\}$, hence $c \approx \frac{1}{2}(v_a + v_b)$.
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_3ci
+
+\clearpage
+
+\LARGE
+3.c.ii
+\normalsize
+
+\textit{Assume that the covariance matrix for item $a$ is $\Sigma_a = \alpha I + \frac{1}{2}(\mu_a \mu_a^\top)$ for vanishingly small $\alpha$, and let $\Sigma_i = \alpha I$ for all $i \neq a$. When you sample $\{k_1, \ldots, k_n\}$ multiple times and use the $q$ vector you defined in part (i), what do you expect the vector $c$ will look like qualitatively for different samples? Think about how it differs from part (i) and how $c$'s variance would be affected.}
+
+\bigskip
+
+% <SCPD_SUBMISSION_TAG>_3cii
+
+\begin{answer}
+    % ### START CODE HERE ###
+    $q$ was originally designed under the assumption that both keys had unit magnitude, which made their dot products with $q$ come out equal (both $\beta$). But now key $a$'s magnitude varies randomly across samples, so its score in the softmax fluctuates while position $b$'s score stays fixed at $\beta$.
+
+    Since the relative size of the scores of key $a$ and key $b$ changes across samples, the attention distribution can have three shapes: peak on $a$ (so $c \approx v_a$), peak on $b$ (so $c \approx v_b$), and occasionally tie (so $c \approx \frac{1}{2}(v_a + v_b)$).
+
+    Introducing magnitude variation in just one key causes serious problems, going from a reliable averaging mechanism (low-variance $c$) to an unreliable one (high-variance $c$). Single-headed attention is fragile under these conditions.
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_3cii
+
+\clearpage
+
+\LARGE
+3.d.i
+\normalsize
+
+\textit{Assume that the covariance matrices are $\Sigma_i = \alpha I$, for vanishingly small $\alpha$. Design $q_1$ and $q_2$ in terms of the $\mu_i$ such that $c$ is approximately equal to $\frac{1}{2}(v_a + v_b)$. Note that $q_1$ and $q_2$ should have different expressions.}
+
+\bigskip
+
+% <SCPD_SUBMISSION_TAG>_3di
+
+\begin{answer}
+    % ### START CODE HERE ###
+    In multi-headed attention, we let $q_1 = \beta \cdot \mu_a$ and $q_2 = \beta \cdot \mu_b$ with a large positive $\beta$ --- each query targets a different one of the unit-norm means. For head 1, $k_a^\top q_1 \approx \mu_a^\top (\beta \mu_a) = \beta$ while $k_i^\top q_1 \approx 0$ for every other $i$, so softmax peaks on $a$ for large $\beta$ and $c_1 \approx v_a$. By the same argument with $\mu_b$, head 2 gives $c_2 \approx v_b$. Averaging the two heads gives $c = \frac{1}{2}(c_1 + c_2) \approx \frac{1}{2}(v_a + v_b)$.
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_3di
+
+\clearpage
+
+\LARGE
+3.d.ii
+\normalsize
+
+\textit{Assume that the covariance matrices are $\Sigma_a = \alpha I + \frac{1}{2}(\mu_a \mu_a^\top)$ for vanishingly small $\alpha$, and $\Sigma_i = \alpha I$ for all $i \neq a$. Take the query vectors $q_1$ and $q_2$ that you designed in part (i). What, qualitatively, do you expect the output $c$ to look like across different samples of the key vectors? Please briefly explain why. (You can ignore cases in which $q_i^\top k_a < 0$.)}
+
+\bigskip
+
+% <SCPD_SUBMISSION_TAG>_3dii
+
+\begin{answer}
+    % ### START CODE HERE ###
+    As long as $k_a^\top \mu_a > 0$, head 1 still gives $c_1 \approx v_a$ with $q_1 = \beta \cdot \mu_a$. Because $k_a$'s variability is along $\mu_a$, perpendicular to $\mu_b$, head 2 gives $c_2 \approx v_b$ reliably with $q_2 = \beta \cdot \mu_b$. As such, $c = \frac{1}{2}(c_1 + c_2) \approx \frac{1}{2}(v_a + v_b)$ with low variance, making it much more steady than in the single-headed case.
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_3dii
+
+\clearpage
+
+\LARGE
+3.e
+\normalsize
+
+\textit{Based on part (d), briefly summarize how multi-headed attention overcomes the drawbacks of single-headed attention that you identified in part (c).}
+
+\bigskip
+
+% <SCPD_SUBMISSION_TAG>_3e
+
+\begin{answer}
+    % ### START CODE HERE ###
+    Multi-headed attention moves all averaging out of the softmax function, where we have seen it to be fragile to perturbations in key magnitude, and into a combination of the outputs. This makes it much more reliable. The individual attention heads can be allowed to find single peaks, which is where attention excels.
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_3e
+
+\clearpage
+
+\LARGE
+4.a.i
+\normalsize
+
+% <SCPD_SUBMISSION_TAG>_4ai
+
+\begin{answer}
+    % ### START CODE HERE ###
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_4ai
+
+\clearpage
+
+\LARGE
+4.a.ii
+\normalsize
+
+% <SCPD_SUBMISSION_TAG>_4aii
+
+\begin{answer}
+    % ### START CODE HERE ###
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_4aii
+
+\clearpage
+
+\LARGE
+4.b.i
+\normalsize
+
+% <SCPD_SUBMISSION_TAG>_4bi
+
+\begin{answer}
+    % ### START CODE HERE ###
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_4bi
+
+\clearpage
+
+\LARGE
+4.b.ii
+\normalsize
+
+% <SCPD_SUBMISSION_TAG>_4bii
+
+\begin{answer}
+    % ### START CODE HERE ###
+    % ### END CODE HERE ###
+\end{answer}
+
+% <SCPD_SUBMISSION_TAG>_4bii
+
+\clearpage
+
+% <SCPD_SUBMISSION_TAG>_entire_submission
+
+\end{document}

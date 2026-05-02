@@ -1,0 +1,18 @@
+# Trained model checkpoints (regenerable, ~13 MB each)
+*.params
+
+# Submission bundle (regenerable via collect_submission.sh)
+src/assignment5_submission.zip
+
+# Tensorboard logs
+expt/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+*.bak
+.ipynb_checkpoints/
